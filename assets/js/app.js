@@ -141,6 +141,34 @@ var highlightStyle = {
   radius: 10
 };
 
+
+var neighborhoods_wms = new L.TileLayer.WMS("http://frontierspatial.com:8080/geoserver/public/wms", {
+  layers: 'public:niskayuna_neighborhoods',
+  format: 'image/png',
+  //cql_filter:"managed ilike '%bike%'",
+  //styles: 'trans_bike',
+  //minZoom: 12,
+  //maxZoom: 18,
+  transparent: true,
+  opacity: 1,
+  zIndex: 100
+}); 
+
+var addresses_wms = new L.TileLayer.WMS("http://frontierspatial.com:8080/geoserver/public/wms", {
+  layers: 'public:address_view',
+  format: 'image/png',
+  //cql_filter:"managed ilike '%bike%'",
+  //styles: 'trans_bike',
+  //minZoom: 12,
+  //maxZoom: 18,
+  transparent: true,
+  opacity: 1,
+  zIndex: 90
+}); 
+
+
+
+
 var neighborhoods = L.geoJson(null, {
   style: function (feature) {
     return {
@@ -216,7 +244,7 @@ $.getJSON("data/sidewalks.geojson", function (data) {
 
 /* Single marker cluster layer to hold all clusters */
 var markerClusters = new L.MarkerClusterGroup({
-  spiderfyOnMaxZoom: true,
+  spiderfyOnMaxZoom: false,
   showCoverageOnHover: true,
   zoomToBoundsOnClick: true,
   disableClusteringAtZoom: 16
@@ -309,8 +337,10 @@ var museums = L.geoJson(null, {
 
 map = L.map("map", {
   zoom: 12,
+  zoomSnap: 0.25,
+  zoomDelta: 0.25,
   center: [42.8078, -73.863834],
-  layers: [cartoLight, neighborhoods, markerClusters, highlight],
+  layers: [cartoLight,neighborhoods_wms,addresses_wms,highlight],
   zoomControl: false,
   attributionControl: false
 });
@@ -423,7 +453,8 @@ var groupedOverlays = {
    // "<img src='assets/img/museum.png' width='24' height='28'>&nbsp;Museums": museumLayer
   },
   "Reference": {
-    "Neighborhoods": neighborhoods,
+    "Neighborhoods": neighborhoods_wms,
+    "Tree inventory": addresses_wms,
     "Sidewalks": sidewalks
   }
 };
